@@ -1,0 +1,45 @@
+services:
+  # Backend service
+  - type: web
+    name: personal-assistant-backend
+    env: node
+    buildCommand: npm install
+    startCommand: node server.js
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: TWILIO_ACCOUNT_SID
+        sync: false
+      - key: TWILIO_AUTH_TOKEN
+        sync: false
+      - key: TWILIO_PHONE_NUMBER
+        sync: false
+      - key: OPENAI_API_KEY
+        sync: false
+
+  # Frontend service
+  - type: static
+    name: personal-assistant-frontend
+    buildCommand: npm install && npm run build
+    staticPublishPath: ./dist
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+    envVars:
+      - key: VITE_API_URL
+        fromService:
+          name: personal-assistant-backend
+          type: web
+          property: host
+
+# Uncomment this section when you're ready to add a database
+# databases:
+#   - name: personal-assistant-db
+#     databaseName: myapp
+#     user: myuser
+
+# Uncomment this section when you're ready to add Redis
+# - type: redis
+#   name: personal-assistant-cache
+#   ipAllowList: []

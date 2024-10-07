@@ -1,0 +1,45 @@
+version: '3.8'
+
+services:
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    environment:
+      - VITE_API_URL=http://backend:3000
+
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - TWILIO_ACCOUNT_SID=${TWILIO_ACCOUNT_SID}
+      - TWILIO_AUTH_TOKEN=${TWILIO_AUTH_TOKEN}
+      - TWILIO_PHONE_NUMBER=${TWILIO_PHONE_NUMBER}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+
+# Uncomment the following sections when you're ready to add a database or Redis
+# 
+# db:
+#   image: postgres:13
+#   environment:
+#     - POSTGRES_DB=myapp
+#     - POSTGRES_USER=myuser
+#     - POSTGRES_PASSWORD=mypassword
+#   volumes:
+#     - postgres_data:/var/lib/postgresql/data
+# 
+# redis:
+#   image: redis:6
+#   ports:
+#     - "6379:6379"
+
+volumes:
+  postgres_data:
